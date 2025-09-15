@@ -5,7 +5,9 @@ public class MethodExamples : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        Debug.Log(NormalizeVector(new Vector2(3, 4)));
+        Debug.Log(NormalizeVector(new Vector2(-3, 2)));
+        Debug.Log(NormalizeVector(new Vector2(1.5f, -3.5f)));
     }
 
     // Update is called once per frame
@@ -13,6 +15,16 @@ public class MethodExamples : MonoBehaviour
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         DrawBoxAtPosition(mousePosition, Vector2.one, new Color(1f, 1f, 1f, 0.5f));
+    }
+
+    private Vector2 NormalizeVector(Vector3 inVector)
+    {
+        Vector3 normalized;
+
+        float magnitude = inVector.magnitude;
+        normalized = new Vector2(inVector.x / magnitude, inVector.y / magnitude);
+
+        return normalized;
     }
 
     private void DrawBoxAtPosition(Vector2 position, Vector2 size, Color colour)

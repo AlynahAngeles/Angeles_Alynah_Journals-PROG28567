@@ -7,15 +7,19 @@ public class Player : MonoBehaviour
     public GameObject bombPrefab;
     public int numberOfBombs;
     public float bombSpacing = -2f;
-    public Transform enemyTransform;
-    public List<Transform> asteroidTransforms;
     private float inDistance = 2f;
+
+    public Transform enemyTransform;
+    private Transform target;
+    private float ratio = 0.5f;
+    public List<Transform> asteroidTransforms;
     
     // Update is called once per frame
     void Update()
     {
         SpawnBombAtOffset();
         cornerBombs();
+        WarpPlayer(target, ratio);
     }
 
     private void SpawnBombAtOffset()
@@ -48,6 +52,15 @@ public class Player : MonoBehaviour
             Vector3 spawnPosition = transform.position + cornerDirection * inDistance;
 
             Instantiate(bombPrefab, spawnPosition, Quaternion.identity);
+        }
+    }
+
+    public void WarpPlayer(Transform target, float ratio)
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            Vector2 halfWay = Vector2.Lerp(transform.position, target.position, ratio);
+            transform.position = new Vector3(halfWay.x, halfWay.y, transform.position.z);
         }
     }
 }

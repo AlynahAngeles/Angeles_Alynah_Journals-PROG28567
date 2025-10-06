@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
     private Transform target;
     private float ratio = 0.5f;
     public List<Transform> asteroidTransforms;
+
+    private LineRenderer radarLine;
     
     // Update is called once per frame
     void Update()
@@ -20,6 +22,7 @@ public class Player : MonoBehaviour
         SpawnBombAtOffset();
         cornerBombs();
         WarpPlayer(target, ratio);
+        EnemyRadar(3, 8);
     }
 
     private void SpawnBombAtOffset()
@@ -62,6 +65,51 @@ public class Player : MonoBehaviour
             Vector2 halfWay = Vector2.Lerp(transform.position, target.position, ratio);
             transform.position = new Vector3(halfWay.x, halfWay.y, transform.position.z);
         }
+    }
+
+    public void EnemyRadar(float radius, int circlePoints)
+    {
+        if(radarLine == null)
+        {
+            radarLine = gameObject.AddComponent<LineRenderer>() as LineRenderer;
+            radarLine.loop = true;
+            radarLine.useWorldSpace = false;
+            radarLine.widthMultiplier = 0.1f;
+            radarLine.sortingLayerName = "Default";
+            radarLine.sortingOrder = 10;
+
+            radarLine.material = new Material(Shader.Find("Sprites/Default"));
+        }
+
+        circlePoints = Mathf.Max(circlePoints, 3);
+
+        bool enemyDetected = false;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                enemyDetected = true;
+                break;
+            }
+        }
+
+        Color radarColor = enemyDetected ? Color.red : Color.green;
+        radarLine.startColor = radarColor;
+        radarLine.endColor = radarColor;
+
+
+        Vector3[] positions = new Vector3[circlePoints];
+        for (int i = 0; i < circlePoints; i++)
+        {
+            float angle = i * Mathf.PI * 2f / circlePoints;
+            float x = Mathf.Cos(angle) * radius;
+            float y = Mathf.Sin(angle) * radius;
+            positions[i] = new Vector3(x, y, 0f);
+        }
+
+        radarLine.positionCount = circlePoints;
+        radarLine.SetPositions(positions);
     }
 }
 

@@ -5,16 +5,23 @@ public class Player : MonoBehaviour
 {
     public Vector2 bombOffset;
     public GameObject bombPrefab;
+    public GameObject powerupPrefab;
     public int numberOfBombs;
     public float bombSpacing = -2f;
     private float inDistance = 2f;
 
+    public Transform player;
     public Transform enemyTransform;
     private Transform target;
     private float ratio = 0.5f;
     public List<Transform> asteroidTransforms;
 
     private LineRenderer radarLine;
+
+    void Start()
+    {
+        SpawnPowerups(4f, 5);
+    }
     
     // Update is called once per frame
     void Update()
@@ -110,6 +117,21 @@ public class Player : MonoBehaviour
 
         radarLine.positionCount = circlePoints;
         radarLine.SetPositions(positions);
+    }
+
+    public void SpawnPowerups(float radius, int numberOfPowerups)
+    {
+        Vector3 center = player.position;
+
+        for (int i = 0; i < numberOfPowerups; i++)
+        {
+            float angle = i * Mathf.PI * 2f / numberOfPowerups;
+            float x = Mathf.Cos(angle) * radius;
+            float y = Mathf.Sin(angle) * radius;
+            Vector3 position = center + new Vector3(x, y, 0f); 
+
+            Instantiate(powerupPrefab, position, Quaternion.identity);
+        }
     }
 }
 

@@ -19,8 +19,11 @@ public class Player : MonoBehaviour
     private LineRenderer radarLine;
 
     //Vector mechanics
-    public bool playerIsHit = false;
-    public float originalSize;
+    //public bool playerIsHit = false;
+    //public float originalSize;
+
+    //Rotation Mechanics for proposal
+    float rotationSpeed = 100f;
 
     void Start()
     {
@@ -34,6 +37,22 @@ public class Player : MonoBehaviour
         cornerBombs();
         WarpPlayer(target, ratio);
         EnemyRadar(3, 8);
+        PlayerRotation();
+    }
+
+    private void PlayerRotation()
+    {
+        if (Input.GetKey(KeyCode.J))
+        {
+            Debug.Log("Player is turning left.");
+            transform.Rotate(Vector3.forward * rotationSpeed * Time.deltaTime);
+        }
+
+        if (Input.GetKey(KeyCode.L))
+        {
+            Debug.Log("Player is rotating right.");
+            transform.Rotate(Vector3.back * rotationSpeed * Time.deltaTime);
+        }
     }
 
     private void SpawnBombAtOffset()
@@ -52,6 +71,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
+            Debug.Log("Player is pressing C.");
             Vector3[] corners = new Vector3[]
             {
                 new Vector3(1,1,0).normalized,
@@ -138,32 +158,32 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void PlayerIsHit(Collider2D collider2D)
-    {
-        if(collider2D.CompareTag("Asteroid") && !playerIsHit)
-        {
-            StartCoroutine(PlayerPulsate(2f, 2f));
-        }
-    }
+   // public void PlayerIsHit(Collider2D collider2D)
+    //{
+        //if(collider2D.CompareTag("Asteroid") && !playerIsHit)
+       //{
+           // StartCoroutine(PlayerPulsate(2f, 2f));
+        //}
+    //}
 
-    public IEnumerator PlayerPulsate(float duration, float maxScale)
-    {
-        Debug.Log("Player is hit!");
-        playerIsHit = true;
+    //public IEnumerator PlayerPulsate(float duration, float maxScale)
+    //{
+        //Debug.Log("Player is hit!");
+        //playerIsHit = true;
 
-        float elapsed = 0f;
-        Vector3 originalSize = transform.localScale;
+        //float elapsed = 0f;
+       // Vector3 originalSize = transform.localScale;
 
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
-            transform.localScale = new Vector3(scale, scale, originalSize.z);
-            yield return null;
-        }
+       // while (elapsed < duration)
+        //{
+           // elapsed += Time.deltaTime;
+           //float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
+            //transform.localScale = new Vector3(scale, scale, originalSize.z);
+            //yield return null;
+        //}
 
-        transform.localScale = originalSize;
-        playerIsHit = false;
-    }
+       // transform.localScale = originalSize;
+        //playerIsHit = false;
+    //}
 }
 

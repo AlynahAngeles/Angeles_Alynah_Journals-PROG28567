@@ -18,6 +18,10 @@ public class Player : MonoBehaviour
 
     private LineRenderer radarLine;
 
+    //Vector mechanics
+    public bool playerIsHit = false;
+    public float originalSize;
+
     void Start()
     {
         SpawnPowerups(4f, 5);
@@ -132,6 +136,34 @@ public class Player : MonoBehaviour
 
             Instantiate(powerupPrefab, position, Quaternion.identity);
         }
+    }
+
+    public void PlayerIsHit(Collider2D collider2D)
+    {
+        if(collider2D.CompareTag("Asteroid") && !playerIsHit)
+        {
+            StartCoroutine(PlayerPulsate(2f, 2f));
+        }
+    }
+
+    public IEnumerator PlayerPulsate(float duration, float maxScale)
+    {
+        Debug.Log("Player is hit!");
+        playerIsHit = true;
+
+        float elapsed = 0f;
+        Vector3 originalSize = transform.localScale;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
+            transform.localScale = new Vector3(scale, scale, originalSize.z);
+            yield return null;
+        }
+
+        transform.localScale = originalSize;
+        playerIsHit = false;
     }
 }
 

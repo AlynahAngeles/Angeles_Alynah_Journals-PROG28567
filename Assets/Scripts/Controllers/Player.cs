@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
 
     private LineRenderer radarLine;
 
+    public float movementSpeed = 6f;
+
     //Vector mechanics
     //public bool playerIsHit = false;
     //public float originalSize;
@@ -28,6 +30,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         SpawnPowerups(4f, 5);
+
     }
     
     // Update is called once per frame
@@ -38,6 +41,35 @@ public class Player : MonoBehaviour
         WarpPlayer(target, ratio);
         EnemyRadar(3, 8);
         PlayerRotation();
+        PlayerMovement();
+    }
+
+    public void PlayerMovement()
+    {
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            Debug.Log("Player is moving up.");
+            transform.position += Vector3.up * movementSpeed * Time.deltaTime;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            Debug.Log("Player is moving left");
+            transform.position += Vector3.left * movementSpeed * Time.deltaTime;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            Debug.Log("Player is moving down.");
+            transform.position += Vector3.down * movementSpeed * Time.deltaTime;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            Debug.Log("Player is moving right.");
+            transform.position += Vector3.right * movementSpeed * Time.deltaTime;
+        }
     }
 
     private void PlayerRotation()

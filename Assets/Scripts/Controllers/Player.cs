@@ -29,19 +29,22 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        SpawnPowerups(4f, 5);
-
     }
-    
+
     // Update is called once per frame
     void Update()
     {
         SpawnBombAtOffset();
         cornerBombs();
-        //WarpPlayer(target, ratio);
+        WarpPlayer(target, ratio);
         EnemyRadar(3, 8);
         PlayerRotation();
         PlayerMovement();
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            SpawnPowerups(4f, 5);
+        }
     }
 
     public void PlayerMovement()

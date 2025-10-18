@@ -52,25 +52,21 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            Debug.Log("Player is moving up.");
             transform.position += Vector3.up * movementSpeed * Time.deltaTime;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            Debug.Log("Player is moving left");
             transform.position += Vector3.left * movementSpeed * Time.deltaTime;
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            Debug.Log("Player is moving down.");
             transform.position += Vector3.down * movementSpeed * Time.deltaTime;
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            Debug.Log("Player is moving right.");
             transform.position += Vector3.right * movementSpeed * Time.deltaTime;
         }
     }
@@ -79,13 +75,11 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Q))
         {
-            Debug.Log("Player is turning left.");
             transform.Rotate(Vector3.forward * rotationSpeed * Time.deltaTime);
         }
 
         if (Input.GetKey(KeyCode.E))
         {
-            Debug.Log("Player is rotating right.");
             transform.Rotate(Vector3.back * rotationSpeed * Time.deltaTime);
         }
     }
@@ -203,11 +197,13 @@ public class Player : MonoBehaviour
         if(collider2D.CompareTag("Asteroid") && !playerIsHit)
         {
            StartCoroutine(PlayerPulsate(2f, 2f));
+           StartCoroutine(PlayerRotate(2f, 7500f));
         }
 
         if (collider2D.CompareTag("Enemy") && !playerIsHit)
         {
-            StartCoroutine(PlayerPulsate(2f, 2f));
+            StartCoroutine(PlayerPulsate(2f, 1.5f));
+            StartCoroutine(PlayerRotate(2f, 7500f));
         }
     }
 
@@ -221,13 +217,35 @@ public class Player : MonoBehaviour
 
         while (elapsed < duration)
         {
-           elapsed += Time.deltaTime;
-           float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
+            elapsed += Time.deltaTime;
+            float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
             transform.localScale = new Vector3(scale, scale, originalSize.z);
             yield return null;
         }
 
         transform.localScale = originalSize;
+        playerIsHit = false;
+    }
+
+    public IEnumerator PlayerRotate(float duration, float rotSpeed)
+    {
+        Debug.Log("Player is dizzy!");
+        playerIsHit = true;
+
+        float elapsed = 0f;
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
+        float startRot = rb.rotation;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float newRot = rb.rotation + rotSpeed * Time.deltaTime;
+            rb.MoveRotation(newRot);
+            yield return null;
+        }
+
+        rb.MoveRotation(startRot);
         playerIsHit = false;
     }
 }

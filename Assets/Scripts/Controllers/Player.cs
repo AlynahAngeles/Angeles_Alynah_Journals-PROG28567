@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -14,15 +14,15 @@ public class Player : MonoBehaviour
     public Transform enemyTransform;
     private Transform target;
     private float ratio = 0.5f;
-    public List<Transform> asteroidTransforms;
+    //public List<Transform> asteroidTransforms;
 
     private LineRenderer radarLine;
 
     public float movementSpeed = 6f;
 
     //Vector mechanics
-    //public bool playerIsHit = false;
-    //public float originalSize;
+    public bool playerIsHit = false;
+    public float originalSize;
 
     //Rotation Mechanics for proposal
     float rotationSpeed = 100f;
@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
     {
         SpawnBombAtOffset();
         cornerBombs();
-        WarpPlayer(target, ratio);
+        //WarpPlayer(target, ratio);
         EnemyRadar(3, 8);
         PlayerRotation();
         PlayerMovement();
@@ -74,13 +74,13 @@ public class Player : MonoBehaviour
 
     private void PlayerRotation()
     {
-        if (Input.GetKey(KeyCode.J))
+        if (Input.GetKey(KeyCode.Q))
         {
             Debug.Log("Player is turning left.");
             transform.Rotate(Vector3.forward * rotationSpeed * Time.deltaTime);
         }
 
-        if (Input.GetKey(KeyCode.L))
+        if (Input.GetKey(KeyCode.E))
         {
             Debug.Log("Player is rotating right.");
             transform.Rotate(Vector3.back * rotationSpeed * Time.deltaTime);
@@ -190,32 +190,42 @@ public class Player : MonoBehaviour
         }
     }
 
-   // public void PlayerIsHit(Collider2D collider2D)
-    //{
-        //if(collider2D.CompareTag("Asteroid") && !playerIsHit)
-       //{
-           // StartCoroutine(PlayerPulsate(2f, 2f));
-        //}
-    //}
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        PlayerIsHit(collision.collider);
+    }
 
-    //public IEnumerator PlayerPulsate(float duration, float maxScale)
-    //{
-        //Debug.Log("Player is hit!");
-        //playerIsHit = true;
+    public void PlayerIsHit(Collider2D collider2D)
+    {
+        if(collider2D.CompareTag("Asteroid") && !playerIsHit)
+        {
+           StartCoroutine(PlayerPulsate(2f, 2f));
+        }
 
-        //float elapsed = 0f;
-       // Vector3 originalSize = transform.localScale;
+        if (collider2D.CompareTag("Enemy") && !playerIsHit)
+        {
+            StartCoroutine(PlayerPulsate(2f, 2f));
+        }
+    }
 
-       // while (elapsed < duration)
-        //{
-           // elapsed += Time.deltaTime;
-           //float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
-            //transform.localScale = new Vector3(scale, scale, originalSize.z);
-            //yield return null;
-        //}
+    public IEnumerator PlayerPulsate(float duration, float maxScale)
+    {
+        Debug.Log("Player is hit!");
+        playerIsHit = true;
 
-       // transform.localScale = originalSize;
-        //playerIsHit = false;
-    //}
+        float elapsed = 0f;
+        Vector3 originalSize = transform.localScale;
+
+        while (elapsed < duration)
+        {
+           elapsed += Time.deltaTime;
+           float scale = Mathf.Lerp(originalSize.x, maxScale, Mathf.PingPong(Time.time * 4f, 1f));
+            transform.localScale = new Vector3(scale, scale, originalSize.z);
+            yield return null;
+        }
+
+        transform.localScale = originalSize;
+        playerIsHit = false;
+    }
 }
 

@@ -376,7 +376,7 @@ GameObject:
   - component: {fileID: 1367514241}
   m_Layer: 0
   m_Name: Pirate Ship Target
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -567,7 +567,7 @@ GameObject:
   - component: {fileID: 1473968261}
   m_Layer: 0
   m_Name: Pirate Ship Target
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -863,7 +863,7 @@ GameObject:
   - component: {fileID: 1934803983}
   m_Layer: 0
   m_Name: Pirate Ship Target
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

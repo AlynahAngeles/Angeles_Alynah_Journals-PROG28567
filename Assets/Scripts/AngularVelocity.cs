@@ -9,7 +9,7 @@ public class AngularVelocity : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();  
     }
-
+         
     void Update()
     {
         rb.angularVelocity = spinSpeed;  

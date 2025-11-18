@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         // The input from the player needs to be determined and

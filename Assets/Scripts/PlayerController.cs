@@ -9,6 +9,9 @@ public class PlayerController : MonoBehaviour
 
     public FacingDirection facingDirection;
 
+    public float groundCheckDistance = 0.74f;
+    public LayerMask groundLayer;
+
     Vector2 playerInput = new Vector2();
 
     public enum FacingDirection
@@ -77,7 +80,21 @@ public class PlayerController : MonoBehaviour
 
     public bool IsGrounded()
     {
-        return false;
+
+        RaycastHit2D hit = Physics2D.Raycast(player.position, Vector2.down, groundCheckDistance, groundLayer);
+        Debug.DrawRay(player.position, Vector2.down * groundCheckDistance, Color.red);
+
+
+        if (hit.collider != null)
+        {
+            Debug.Log("Player is grounded");
+            return true;
+        }
+        else
+        {
+            Debug.Log("Player is not grounded");
+            return false;
+        }
     }
 
     public FacingDirection GetFacingDirection()

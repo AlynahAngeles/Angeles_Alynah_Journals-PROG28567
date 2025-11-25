@@ -9,10 +9,22 @@ public class PlayerController : MonoBehaviour
 
     public FacingDirection facingDirection;
 
-    public float groundCheckDistance = 0.74f;
+    public float groundCheckDistance = 0.67f;
     public LayerMask groundLayer;
 
+    public bool jump = false;
+    public float terminalSpeed = -100f; //fastest speed of player when falling
+
     Vector2 playerInput = new Vector2();
+
+    public float jumpHeight = 10f; //apex of jump height
+    public float jumpTime = 0.5f; //apex of jump time
+    public float jumpForce;
+    public float gravity;
+
+    public float fallMultiplier = 1.25f;
+
+    public bool isGrounded = true;
 
     public enum FacingDirection
     {
@@ -23,28 +35,50 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         player = GetComponent<Rigidbody2D>();
+
+        gravity = (-2 * jumpHeight) / (jumpTime * jumpTime);
+        jumpForce = (2 * jumpHeight) / jumpTime;
+
+        player.gravityScale = gravity / Physics2D.gravity.y;
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
         // The input from the player needs to be determined and
         // then passed in the to the MovementUpdate which should
         // manage the actual movement of the character.
 
         playerInput.x = 0;
+        playerInput.y = 0;
 
         if (Input.GetKey(KeyCode.A))
         {
             playerInput.x = -1;
         }
 
-        else if(Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
             playerInput.x = 1;
         }
 
+        if (Input.GetKeyDown(KeyCode.W) && IsGrounded())
+        {
+            playerInput.y = 1;
+        }
+
         MovementUpdate(playerInput);
+
+        if (jump == true)
+        {
+            if(player.linearVelocity.y < 0)
+            {
+                AirTime();
+            }
+        }
+
     }
 
     private void MovementUpdate(Vector2 playerInput)
@@ -55,11 +89,30 @@ public class PlayerController : MonoBehaviour
         if(Mathf.Abs(player.linearVelocity.x) > maxSpeed)
         {
             player.linearVelocity = new Vector2(Mathf.Clamp(player.linearVelocity.x, -maxSpeed, maxSpeed), player.linearVelocity.y);
+            player.linearDamping = 7f;
         }
 
-        player.linearDamping = 7f;
+        if (playerInput.y > 0f && IsGrounded())
+        {
+            Debug.Log("Player jumped!");
+            player.linearVelocity = new Vector2(player.linearVelocity.x, jumpForce);
+        }
     }
 
+    public void AirTime()
+    {
+        Debug.Log("Player is falling");
+
+        if (player.linearVelocity.y < 0)
+        {
+            player.linearVelocity += Vector2.down * (Mathf.Abs(Physics2D.gravity.y) * fallMultiplier * player.gravityScale * Time.deltaTime);
+        }
+
+        if (player.linearVelocity.y < terminalSpeed)
+            player.linearVelocity = new Vector2(player.linearVelocity.x, terminalSpeed);
+
+    }
+    
     public bool IsWalking()
     {
 
@@ -84,15 +137,16 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(player.position, Vector2.down, groundCheckDistance, groundLayer);
         Debug.DrawRay(player.position, Vector2.down * groundCheckDistance, Color.red);
 
-
         if (hit.collider != null)
         {
-            Debug.Log("Player is grounded");
+            isGrounded = true;
+            jump = false;
             return true;
         }
         else
         {
-            Debug.Log("Player is not grounded");
+            jump = true;
+            isGrounded = false;
             return false;
         }
     }

@@ -24,6 +24,9 @@ public class PlayerController : MonoBehaviour
 
     public float fallMultiplier = 1.25f;
 
+    public float coyoteTime = 0.5f;
+    public float coyoteCounter;
+
     public bool isGrounded = true;
 
     public enum FacingDirection
@@ -46,10 +49,20 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        IsGrounded();
 
         // The input from the player needs to be determined and
         // then passed in the to the MovementUpdate which should
         // manage the actual movement of the character.
+
+        if (isGrounded)
+        {
+            coyoteCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteCounter -= Time.deltaTime;
+        }
 
         playerInput.x = 0;
         playerInput.y = 0;
@@ -64,21 +77,17 @@ public class PlayerController : MonoBehaviour
             playerInput.x = 1;
         }
 
-        if (Input.GetKeyDown(KeyCode.W) && IsGrounded())
+        if (Input.GetKeyDown(KeyCode.W) && coyoteTime > 0f)
         {
             playerInput.y = 1;
         }
 
         MovementUpdate(playerInput);
 
-        if (jump == true)
+        if (jump == true && player.linearVelocity.y < 0)
         {
-            if(player.linearVelocity.y < 0)
-            {
-                AirTime();
-            }
+            AirTime();
         }
-
     }
 
     private void MovementUpdate(Vector2 playerInput)
@@ -92,10 +101,12 @@ public class PlayerController : MonoBehaviour
             player.linearDamping = 7f;
         }
 
-        if (playerInput.y > 0f && IsGrounded())
+        if (playerInput.y > 0f && coyoteCounter > 0f)
         {
             Debug.Log("Player jumped!");
             player.linearVelocity = new Vector2(player.linearVelocity.x, jumpForce);
+            coyoteCounter = 0f;
+               
         }
     }
 

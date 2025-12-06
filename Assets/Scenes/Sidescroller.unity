@@ -1732,12 +1732,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   jump: 0
-  terminalSpeed: -20
+  terminalSpeed: -50
   jumpHeight: 30
-  jumpTime: 1
-  jumpForce: 200
-  gravity: 5
-  fallMultiplier: 1.25
+  jumpTime: 1.5
+  jumpForce: 60
+  gravity: 1
+  fallMultiplier: 5
   coyoteTime: 0.5
   coyoteCounter: 0
   isGrounded: 1

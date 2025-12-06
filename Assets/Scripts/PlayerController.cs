@@ -13,16 +13,16 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer;
 
     public bool jump = false;
-    public float terminalSpeed = -100f; //fastest speed of player when falling
+    public float terminalSpeed; //fastest speed of player when falling
 
     Vector2 playerInput = new Vector2();
 
     public float jumpHeight = 10f; //apex of jump height
     public float jumpTime = 0.5f; //apex of jump time
-    public float jumpForce;
+    public float jumpForce = 60;
     public float gravity;
 
-    public float fallMultiplier = 1.25f;
+    public float fallMultiplier = 2.5f;
 
     public float coyoteTime = 0.5f;
     public float coyoteCounter;
@@ -69,12 +69,12 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            playerInput.x = -1;
+            playerInput.x = -3f;
         }
 
         if (Input.GetKey(KeyCode.D))
         {
-            playerInput.x = 1;
+            playerInput.x = 3f;
         }
 
         if (Input.GetKeyDown(KeyCode.W) && coyoteTime > 0f)
@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour
         if(Mathf.Abs(player.linearVelocity.x) > maxSpeed)
         {
             player.linearVelocity = new Vector2(Mathf.Clamp(player.linearVelocity.x, -maxSpeed, maxSpeed), player.linearVelocity.y);
-            player.linearDamping = 7f;
+            player.linearDamping = 5f;
         }
 
         if (playerInput.y > 0f && coyoteCounter > 0f)
@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour
 
         if (player.linearVelocity.y < 0)
         {
-            player.linearVelocity += Vector2.down * (Mathf.Abs(Physics2D.gravity.y) * fallMultiplier * player.gravityScale * Time.deltaTime);
+            player.linearVelocity += Vector2.down * (Mathf.Abs(Physics2D.gravity.y) * (fallMultiplier) * player.gravityScale * Time.deltaTime);
         }
 
         if (player.linearVelocity.y < terminalSpeed)

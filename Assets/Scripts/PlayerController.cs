@@ -5,7 +5,7 @@ using System.Collections; //added so that I can add IEnumerator for the Coroutin
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody2D player;
-    public float playerSpeed = 3f;
+    public float playerSpeed = 3.5f;
     public float maxSpeed = 6f;
 
     public FacingDirection facingDirection;
@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour
 
     Vector2 playerInput = new Vector2();
 
-    public float jumpHeight = 10f; //apex of jump height
-    public float jumpTime = 0.5f; //apex of jump time
+    public float jumpHeight = 40f; //apex of jump height
+    public float jumpTime = 1.5f; //apex of jump time
     public float jumpForce = 60;
     public float gravity;
 
@@ -30,9 +30,9 @@ public class PlayerController : MonoBehaviour
 
     public bool isGrounded = true;
     private bool isDash = false; //boolean that changes based on whether the player is dashing or not to avoid spamming dash and properly start coroutine
-    public float dashCoolDown = 3f;
+    public float dashCoolDown = 1.5f;
     public float dashDuration = 0.5f;
-    public float dashForce = 50f;
+    public float dashForce = 30f;
     public bool canDash = true;
     public float dashDirection;
 
@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
             AirTime();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDash) //if statement for when the player presses left shift and is NOT dashing, then start the coroutine to dash again
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash) //if statement for when the player presses left shift and is NOT dashing, then start the coroutine to dash again
         {
             StartCoroutine(Dash());
         }

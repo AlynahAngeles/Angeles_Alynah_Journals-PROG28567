@@ -1733,7 +1733,7 @@ MonoBehaviour:
     m_Bits: 8
   jump: 0
   terminalSpeed: -50
-  jumpHeight: 30
+  jumpHeight: 40
   jumpTime: 1.5
   jumpForce: 60
   gravity: 1
@@ -1741,6 +1741,11 @@ MonoBehaviour:
   coyoteTime: 0.5
   coyoteCounter: 0
   isGrounded: 1
+  dashCoolDown: 3
+  dashDuration: 0.5
+  dashForce: 30
+  canDash: 1
+  dashDirection: 0
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0

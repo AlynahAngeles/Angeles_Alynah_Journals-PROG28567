@@ -1,5 +1,6 @@
 using UnityEngine;
-using static PlayerController;
+//using static PlayerController;
+using System.Collections; //added so that I can add IEnumerator for the Coroutine
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,6 +29,12 @@ public class PlayerController : MonoBehaviour
     public float coyoteCounter;
 
     public bool isGrounded = true;
+    private bool isDash = false; //boolean that changes based on whether the player is dashing or not to avoid spamming dash and properly start coroutine
+    public float dashCoolDown = 3f;
+    public float dashDuration = 0.5f;
+    public float dashForce = 50f;
+    public bool canDash = true;
+    public float dashDirection;
 
     public enum FacingDirection
     {
@@ -51,10 +58,6 @@ public class PlayerController : MonoBehaviour
     {
         IsGrounded();
 
-        // The input from the player needs to be determined and
-        // then passed in the to the MovementUpdate which should
-        // manage the actual movement of the character.
-
         if (isGrounded)
         {
             coyoteCounter = coyoteTime;
@@ -67,28 +70,65 @@ public class PlayerController : MonoBehaviour
         playerInput.x = 0;
         playerInput.y = 0;
 
-        if (Input.GetKey(KeyCode.A))
+        if (!isDash)
         {
-            playerInput.x = -3f;
-        }
 
-        if (Input.GetKey(KeyCode.D))
-        {
-            playerInput.x = 3f;
-        }
+            if (Input.GetKey(KeyCode.A))
+            {
+                playerInput.x = -3f;
+            }
 
-        if (Input.GetKeyDown(KeyCode.W) && coyoteTime > 0f)
-        {
-            playerInput.y = 1;
-        }
+            if (Input.GetKey(KeyCode.D))
+            {
+                playerInput.x = 3f;
+            }
 
-        MovementUpdate(playerInput);
+            if (Input.GetKeyDown(KeyCode.W) && coyoteTime > 0f)
+            {
+                playerInput.y = 1;
+            }
+
+            MovementUpdate(playerInput);
+        }
 
         if (jump == true && player.linearVelocity.y < 0)
         {
             AirTime();
         }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDash) //if statement for when the player presses left shift and is NOT dashing, then start the coroutine to dash again
+        {
+            StartCoroutine(Dash());
+        }
     }
+
+    IEnumerator Dash() //coroutine for dash movement
+    {
+        Debug.Log("Player dashed.");
+        canDash = false;
+        isDash = true;
+
+        if(facingDirection == FacingDirection.left && isDash == true)
+        {
+            dashDirection = -3f;
+        }
+
+        else if (facingDirection == FacingDirection.right && isDash == true)
+        {
+            dashDirection = 3f;
+        }
+
+        player.AddForce(new Vector2(dashDirection * dashForce, 0f), ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(dashDuration);
+
+        isDash = false;
+
+        yield return new WaitForSeconds(dashCoolDown);
+
+        canDash = true;
+
+        }
 
     private void MovementUpdate(Vector2 playerInput)
     {

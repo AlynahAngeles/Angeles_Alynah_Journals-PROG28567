@@ -2127,7 +2127,7 @@ MonoBehaviour:
     m_Bits: 8
   jump: 0
   terminalSpeed: -50
-  jumpHeight: 35
+  jumpHeight: 40
   jumpTime: 1.5
   jumpForce: 20
   gravity: 1
@@ -2142,8 +2142,11 @@ MonoBehaviour:
   dashDirection: 0
   damage: 0
   lunge: 0
+  lungeForce: 10
   canAttack: 1
   resetTime: 0
+  isLunging: 0
+  lungeDuration: 0.5
   enemy: {fileID: 0}
 --- !u!4 &1433354315
 Transform:

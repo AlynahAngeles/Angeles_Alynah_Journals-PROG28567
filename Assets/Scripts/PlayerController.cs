@@ -18,9 +18,9 @@ public class PlayerController : MonoBehaviour
 
     Vector2 playerInput = new Vector2();
 
-    public float jumpHeight = 40f; //apex of jump height
+    public float jumpHeight = 20f; //apex of jump height
     public float jumpTime = 1.5f; //apex of jump time
-    public float jumpForce = 60;
+    public float jumpForce = 20;
     public float gravity;
 
     public float fallMultiplier = 2.5f;
@@ -36,6 +36,13 @@ public class PlayerController : MonoBehaviour
     public bool canDash = true;
     public float dashDirection;
 
+    public float damage;
+    public float lunge = 0;
+    public bool canAttack = true;
+    public float resetTime = 0.2f;
+    public bool isLunging = false;
+    public PlatformerEnemy enemy;
+
     public enum FacingDirection
     {
         left, right, idle
@@ -45,6 +52,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         player = GetComponent<Rigidbody2D>();
+        enemy = FindObjectOfType<PlatformerEnemy>();
 
         gravity = (-2 * jumpHeight) / (jumpTime * jumpTime);
         jumpForce = (2 * jumpHeight) / jumpTime;
@@ -70,7 +78,7 @@ public class PlayerController : MonoBehaviour
         playerInput.x = 0;
         playerInput.y = 0;
 
-        if (!isDash)
+        if (!isDash && !isLunging)
         {
 
             if (Input.GetKey(KeyCode.A))
@@ -83,7 +91,7 @@ public class PlayerController : MonoBehaviour
                 playerInput.x = 3f;
             }
 
-            if (Input.GetKeyDown(KeyCode.W) && coyoteTime > 0f)
+            if (Input.GetKeyDown(KeyCode.W) && coyoteCounter > 0f)
             {
                 playerInput.y = 1;
             }
@@ -100,6 +108,22 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(Dash());
         }
+
+        if (Input.GetMouseButtonDown(0) && canAttack)
+        {
+            if (isGrounded)
+            {
+                StartCoroutine(Attack());
+            }
+        }
+    }
+
+    IEnumerator Attack()
+    {
+        canAttack = false;
+        Slash();
+        yield return new WaitForSeconds(0.5f);
+        canAttack = true;
     }
 
     IEnumerator Dash() //coroutine for dash movement
@@ -108,7 +132,7 @@ public class PlayerController : MonoBehaviour
         canDash = false;
         isDash = true;
 
-        if(facingDirection == FacingDirection.left && isDash == true)
+        if (facingDirection == FacingDirection.left && isDash == true)
         {
             dashDirection = -3f;
         }
@@ -128,14 +152,14 @@ public class PlayerController : MonoBehaviour
 
         canDash = true;
 
-        }
+    }
 
     private void MovementUpdate(Vector2 playerInput)
     {
 
         player.AddForce(new Vector2(playerInput.x * playerSpeed, 0f), ForceMode2D.Force);
 
-        if(Mathf.Abs(player.linearVelocity.x) > maxSpeed)
+        if (Mathf.Abs(player.linearVelocity.x) > maxSpeed)
         {
             player.linearVelocity = new Vector2(Mathf.Clamp(player.linearVelocity.x, -maxSpeed, maxSpeed), player.linearVelocity.y);
             player.linearDamping = 5f;
@@ -146,13 +170,50 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Player jumped!");
             player.linearVelocity = new Vector2(player.linearVelocity.x, jumpForce);
             coyoteCounter = 0f;
-               
+
         }
+    }
+
+    public void Slash()
+    {
+        int damage = Random.Range(4, 8);
+        Debug.Log("Player hit for " + damage + " damage!");
+
+        if (enemy != null && enemy.HPVisible())
+        {
+            enemy.Damaged(damage);
+        }
+
+        if (facingDirection == FacingDirection.left)
+        {
+            lunge = -2f;
+        }
+
+        else if (facingDirection == FacingDirection.right)
+        {
+            lunge = 2f;
+        }
+
+        Vector2 playerVelocity = player.linearVelocity;
+        player.linearVelocity = new Vector2(playerVelocity.x + lunge * 20f, playerVelocity.y);
+
+        StartCoroutine(ResetVelocity(0.2f));
+    }
+
+    IEnumerator ResetVelocity(float resetTime)
+    {
+        yield return new WaitForSeconds(resetTime);
+
+        Debug.Log("Player reseting velocity");
+        Vector2 resetVel = player.linearVelocity;
+        resetVel.x = Mathf.Clamp(resetVel.x, -maxSpeed, maxSpeed);
+        player.linearVelocity = new Vector2(resetVel.x, resetVel.y);
+
+        isLunging = false;
     }
 
     public void AirTime()
     {
-        Debug.Log("Player is falling");
 
         if (player.linearVelocity.y < 0)
         {

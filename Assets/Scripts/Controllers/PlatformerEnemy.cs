@@ -37,12 +37,30 @@ public class PlatformerEnemy : MonoBehaviour
 
         if (distance <= playerDetector)
         {
-            Debug.Log("Player is nearby");
-            enemyHP.gameObject.SetActive(true);
+            if(enemyHP != null)
+            {
+                enemyHP.gameObject.SetActive(true);
+                enemyHP.text = "HP: " + Mathf.RoundToInt(enemyCurrentHP);
+            }
         }
         else
         {
             enemyHP.gameObject.SetActive(false);
         }
+
+        if(enemyCurrentHP <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void Damaged(int damageTaken)
+    {
+        enemyCurrentHP -= damageTaken;
+    }
+
+    public bool HPVisible()
+    {
+        return enemyHP != null && enemyHP.gameObject.activeSelf;
     }
 }
